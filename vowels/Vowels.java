@@ -1,22 +1,19 @@
-//Return the number (count) of vowels in the given string.
-//
-//We will consider a, e, i, o, u as vowels for this Kata (but not y).
-//
-//The input string will only consist of lower case letters and/or spaces.
+public class CountIPAddresses {
 
-public class Vowels {
-
-  public static int getCount(String str) {
-    char[] vowels = {'a', 'e', 'i', 'o', 'u'};
-     int count = 0;
-     for (char c : str.toCharArray()) {
-       for (char v : vowels) {
-         if (c == v) {
-           count++;
-         }
-       }
-     }
-     return count;
+  public static long ipsBetween(String start, String end) {
+    int difference  = parseIpToLong(start) - parseIpToLong(end);
+    return String.format("* With input {\"%s\"}, \"%s\"  => return   %d",
+    start, end, difference);
   }
-
+  public static int[] parseIPString (String toParse){
+    return Arrays.stream(ip.split("\\."))
+        .mapToInt(Integer::parseInt)
+        .toArray();
+  }
+  public static long parseIpToLong(String ip) {
+    int[] octets = parseIPString(ip);
+    return IntStream.range(0, 4)
+        .mapToLong(i -> (long) octets[i] << (8 * (3 - i)))
+        .sum();
+  }
 }
