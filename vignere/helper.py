@@ -62,5 +62,17 @@ class VigenereCipher(object):
 31
         return output
 32
-​
- Excellent! You may take your time to refactor/comment your solution. Submit when ready.
+# ​
+# Community Solution
+# class VigenereCipher(object):
+#     def __init__(self, key: str, alphabet: str):
+#         self.alphabet = list(alphabet)
+#         self.key = [alphabet.index(i) for i in key]
+
+#     def encode(self, text):
+#         return "".join([self.alphabet[(self.alphabet.index(text[i]) + self.key[i % len(self.key)]) % len(self.alphabet)]
+#                         if text[i] in self.alphabet else text[i] for i in range(len(text))])
+
+#     def decode(self, text):
+#         return "".join([self.alphabet[(self.alphabet.index(text[i]) - self.key[i % len(self.key)]) % len(self.alphabet)]
+#                         if text[i] in self.alphabet else text[i] for i in range(len(text))])
