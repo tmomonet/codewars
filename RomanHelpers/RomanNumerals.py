@@ -1,6 +1,7 @@
+# https://www.codewars.com/kata/51b66044bce5799a7f000003/train/python
+
 class RomanNumerals:
-    
-    
+     
     romanArabicDict = {
     1000: "M",
     900: "CM",
@@ -29,4 +30,17 @@ class RomanNumerals:
 
     @staticmethod
     def from_roman(roman_num : str) -> int:
-        return 0
+        stack = []
+        str = list(roman_num)
+        #Invert Dictionary
+        invDict = {v: k for k, v in RomanNumerals.romanArabicDict.items()}
+        
+        for letter in str:
+            value = invDict[letter]
+            
+            if (len(stack) > 0 and stack[-1] < value):
+                value = value - stack.pop()
+        
+            stack.append(value)
+        return sum(stack)
+        
