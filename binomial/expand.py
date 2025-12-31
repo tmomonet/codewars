@@ -17,7 +17,7 @@ def expand(expr):
 
     pattern = re.compile(r"\((-)?([0-9]*)?([a-z])?\s*([-+])+\s*([0-9]*)?([a-z])?\)\s*\^\s*([0-9]+)")
     m = re.search(pattern, expr)
-    
+
     exponent = (int(m.group(7)))
 
     coef_a = m.group(2)
@@ -50,54 +50,49 @@ def expand(expr):
         print(triangle[-1], index)
         return triangle[-1][index]
 
+    def var_pow(var, p):
+        if not var or p == 0:
+            return ""
+        if p == 1:
+            return var
+        return f"{var}^{p}"
+
+    def term_to_str(coeff, a_var, i, b_var, j, is_first=False):
+        # Build variable part
+        vp = var_pow(a_var, i) + var_pow(b_var, j)
+
+        if vp:
+            if coeff == 1:
+                core = vp
+            elif coeff == -1:
+                core = "-" + vp
+            else:
+                core = f"{abs(coeff)}{vp}" if coeff < 0 else f"{coeff}{vp}"
+        else:
+            core = str(abs(coeff)) if coeff < 0 else str(coeff)
+
+        if is_first:
+            return core if coeff >= 0 else "-" + core.lstrip("-") 
+        else:
+            return ("+" if coeff >= 0 else "-") + core.lstrip("-")
+
     for i in range(exponent, -1, -1):
         j = exponent - i
+
         sign_a = -1 if is_negative(m.group(1), i) else 1
         sign_b = -1 if is_negative(m.group(4), j) else 1
-        a_term = pascal_coeff(triangle, j) * (coef_a ** i) * sign_a
-        b_term = (coef_b ** j) * sign_b
-        final_term = (a_term * b_term)
-        a_var = m.group(3)
-        b_var = m.group(5)
-        if i == exponent:
-            if is_negative(m.group(1), i):
-                #consider logic for variables in second term
-                if coef_a == 1:
-                    output += ("-" + a_var + "^" + str(i))
-                else:
-                    output += ("-" + str((int(coef_a)) ** i) + a_var + "^" + str(i))
+
+        coeff = pascal_coeff(triangle, j) * (coef_a ** i) * (coef_b ** j) * sign_a * sign_b
+
+        a_var = m.group(3) or ""
+        b_var = m.group(6) or ""
+
+        if j == exponent:
+            if sign_a * sign_b == -1:
+                output += "-" + str(coef_b ** j)
             else:
-                output += (str((int(coef_a)) ** i) + a_var + "^" + str(i))
-        elif j == exponent:
-            if is_negative(m.group(4), j):
-                output += ("-" + str((int(coef_b)) ** j))
-            else:
-                output += ("+" + str((int(coef_b)) ** j))
+                output += "+" + str(coef_b ** j)
         else:
-            if final_term < 0:
-                if i == 1:
-                    output += ("-" + str((int(coef_b)) ** i))
-                else:
-                    output += ("-" + str((abs(final_term))) + a_var + "^" + str(i))
-            else:
-                if i == 1:
-                    output += ("-" + str((int(coef_b)) ** i))
-                else:
-                    output += ("+" + str(((final_term)) ** i) + a_var + "^" + str(i))
+            output += term_to_str(coeff, a_var, i, b_var, j, is_first=(i == exponent))
+
     return output
-
-
-print(expand("(x+1)^0"), "1")
-print(expand("(x+1)^1"), "x+1")
-# print(expand("(x+1)^2"), "x^2+2x+1")
-
-print(expand("(x-1)^0"), "1")
-print(expand("(x-1)^1"), "x-1")
-# print(expand("(x-1)^2"), "x^2-2x+1")
-
-print(expand("(5m+3)^4"), "625m^4+1500m^3+1350m^2+540m+81")
-print(expand("(2x-3)^3"), "8x^3-36x^2+54x-27")
-print(expand("(7x-7)^0"), "1")
-
-print(expand("(-5m+3)^4"), "625m^4-1500m^3+1350m^2-540m+81")
-print(expand("(-2k-3)^3"), "")
